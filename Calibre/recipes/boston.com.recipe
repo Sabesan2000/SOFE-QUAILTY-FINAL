@@ -1,0 +1,127 @@
+from calibre.web.feeds.recipes import BasicNewsRecipe
+
+
+def classes(classes):
+    q = frozenset(classes.split(' '))
+    return dict(attrs={
+        'class': lambda x: x and frozenset(x.split()).intersection(q)})
+
+
+def class_as_string(x):
+    if isinstance(x, (list, tuple)):
+        x = ' '.join(x)
+    return x
+
+
+def class_startswith(*prefixes):
+
+    def q(x):
+        if x:
+            x = class_as_string(x)
+            for prefix in prefixes:
+                if x.startswith(prefix):
+                    return True
+        return False
+
+    return dict(attrs={'class': q})
+
+
+# From: https://www3.bostonglobe.com/lifestyle/comics?arc404=true
+comics_to_fetch = {
+    "ADAM@HOME": 'ad',
+    "ARLO & JANIS": 'aj',
+    # "CUL DE SAC": 'cds',
+    # "CURTIS": 'kfcrt',
+    "DILBERT": 'dt',
+    "DOONESBURY": 'db',
+    "DUSTIN": 'kfdus',
+    "F MINUS": 'fm',
+    "FOR BETTER OR WORSE": 'fb',
+    # "GET FUZZY": 'gz',
+    # "MOTHER GOOSE & GRIMM": 'tmmgg',
+    # "JUMPSTART": 'jt',
+    "MONTY": 'mt',
+    # "POOCH CAFE",
+    "RHYMES WITH ORANGE": 'kfrwo',
+    # "ROSE IS ROSE": 'rr',
+    # "ZIPPY THE PINHEAD": 'kfzpy',
+    "ZITS": 'kfzt'
+}
+
+
+class BostonGlobeSubscription(BasicNewsRecipe):
+
+    title = "Boston Globe"
+    __author__ = 'Kovid Goyal'
+    description = 'The Boston Globe'
+    language = 'en'
+    timefmt = ' [%a, %d %b, %Y]'
+    keep_only_tags = [
+        class_startswith('headline |', 'subheader |', 'byline |', 'image |', 'lead |', 'body |', 'comic-debug'),
+    ]
+    remove_tags = [
+        classes('inline-newsletter ad skip-nav article-footer sharebar arc_ad'),
+        dict(id='continue_button'),
+        dict(name=['meta', 'link'])
+    ]
+    remove_tags_after = dict(attrs={'class': lambda x:x and x.startswith('body |')})
+    remove_attributes = ['style']
+    no_stylesheets = True
+    # simultaneous_downloads = 1
+
+    def image_url_processor(self, baseurl, url):
+        return self.absolutize_url(url)
+
+    def absolutize_url(self, url):
+        if url.startswith("//"):
+            return "https:" + url
+        if url.startswith('/'):
+            url = "https://www.bostonglobe.com" + url
+        return url
+
+    def parse_index(self):
+        feeds = []
+        soup = self.index_to_soup('https://www.bostonglobe.com/todays-paper/')
+        # soup = self.index_to_soup('file:///t/raw.html')
+        section = None
+        articles = []
+
+        for h in soup.findAll(['h2', 'h4']):
+            if h.name == 'h4':
+                if section and articles:
+                    feeds.append((section, articles))
+                section = self.tag_to_string(h)
+                articles = []
+                if section.lower().startswith('jump'):
+                    section = None
+                else:
+                    self.log(section)
+                continue
+            if not section:
+                continue
+            title = self.tag_to_string(h)
+            a = h.findParent('a', href=True)
+            url = self.absolutize_url(a['href'])
+            desc = ''
+            q = h.findNextSibling('div', **classes('deck'))
+            if q is not None:
+                desc = self.tag_to_string(q)
+            articles.append({'title': title, 'url': url, 'description': desc})
+            self.log('\t', title, url)
+
+        if section and articles:
+            feeds.append((section, articles))
+        articles = []
+        for title, slug in comics_to_fetch.items():
+            articles.append({'title':title, 'url':'https://www.bostonglobe.com/games-comics/comics/{}/'.format(slug)})
+        if articles:
+            feeds.append(('Comics', articles))
+        return feeds
+
+    def preprocess_html(self, soup):
+        for img in soup.findAll('img'):
+            fs = img.get('data-src')
+            if fs:
+                remainder = fs.split('=')[-1].split('0')[-1]
+                img['src'] = 'https:/' + remainder
+        return soup
