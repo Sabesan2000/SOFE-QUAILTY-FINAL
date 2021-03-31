@@ -32,6 +32,7 @@ from calibre.gui2.library import DEFAULT_SORT
 from calibre.utils.localization import calibre_langcode_to_name
 from calibre.library.coloring import color_row_key
 from polyglot.builtins import iteritems, itervalues, unicode_type, string_or_bytes, range, map
+from calibre.PyPDF2.pdf import PdfFileReader, PdfFileWriter
 
 Counts = namedtuple('Counts', 'library_total total current')
 
@@ -158,6 +159,9 @@ class ColumnIcon(object):  # {{{
             pass
 # }}}
 
+def get_pdf_page(self, file_path):
+    pdf = PdfFileReader(file_path)
+    return pdf.getNumPages()
 
 class BooksModel(QAbstractTableModel):  # {{{
 
@@ -557,6 +561,10 @@ class BooksModel(QAbstractTableModel):  # {{{
         mi.id = self.db.id(idx)
         mi.field_metadata = self.db.field_metadata
         mi.path = self.db.abspath(idx, create_dirs=False)
+        try:
+        	mi.page = get_pdf_page(self,mi.path + "\\" + mi.title + " - " + mi.authors[0] + '.pdf')
+        except:
+        	print()
         mi.format_files = self.db.new_api.format_files(self.db.data.index_to_id(idx))
         mi.row_number = idx
         try:
