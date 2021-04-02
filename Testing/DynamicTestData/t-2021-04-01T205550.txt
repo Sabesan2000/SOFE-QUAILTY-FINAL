@@ -1,0 +1,18 @@
+.F.
+======================================================================
+FAIL: test_thing_1_bar (__main__.TestSequence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\VirtualEnvironments\Quality_Final\lib\site-packages\parameterized\parameterized.py", line 533, in standalone_func
+    return func(*(a + p.args), **p.kwargs)
+  File "dynamic-test-data.py", line 14, in test_thing
+    unittest.TestCase.assertEqual(self, first=a, second=b, msg=name)
+AssertionError: 'a' != 'b'
+- a
++ b
+ : bar
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=1)
