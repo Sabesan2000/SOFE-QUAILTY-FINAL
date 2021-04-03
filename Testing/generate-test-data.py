@@ -4,7 +4,6 @@ from os import listdir
 from PyPDF2.pdf import PdfFileReader
 import csv
 
-
 test_dir = 'TestPDFs'
 
 pdf_names = listdir(test_dir)
