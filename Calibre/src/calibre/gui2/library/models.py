@@ -32,6 +32,12 @@ from calibre.gui2.library import DEFAULT_SORT
 from calibre.utils.localization import calibre_langcode_to_name
 from calibre.library.coloring import color_row_key
 from polyglot.builtins import iteritems, itervalues, unicode_type, string_or_bytes, range, map
+from calibre.customize.ui import quick_metadata
+from calibre.ebooks import DRMError
+from calibre.ptempfile import cleanup
+from calibre.utils.ipc.server import Server
+from calibre.utils.ipc.job import ParallelJob
+
 from calibre.PyPDF2.pdf import PdfFileReader, PdfFileWriter
 
 Counts = namedtuple('Counts', 'library_total total current')
@@ -560,12 +566,16 @@ class BooksModel(QAbstractTableModel):  # {{{
         mi.cover_data = ('jpg', self.cover(idx))
         mi.id = self.db.id(idx)
         mi.field_metadata = self.db.field_metadata
+
         mi.path = self.db.abspath(idx, create_dirs=False)
+
         try:
         	mi.page = get_pdf_page(self,mi.path + "\\" + mi.title + " - " + mi.authors[0] + '.pdf')
         except:
         	print()
+        	
         mi.format_files = self.db.new_api.format_files(self.db.data.index_to_id(idx))
+
         mi.row_number = idx
         try:
             mi.marked = self.db.data.get_marked(idx, index_is_id=False)
@@ -618,6 +628,7 @@ class BooksModel(QAbstractTableModel):  # {{{
                   'cover'   : self.db.cover(id, index_is_id=True),
                   'tags'    : tags,
                   'comments': mi.comments,
+                  'page'  : mi.page,
                   }
             if mi.series is not None:
                 info['tag order'] = {
