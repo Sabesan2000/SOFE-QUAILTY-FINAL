@@ -555,16 +555,18 @@ class BooksModel(QAbstractTableModel):  # {{{
         return self.rowCount(None)
 
     def get_book_display_info(self, idx):
+        print("display")
         mi = self.db.get_metadata(idx)
         mi.size = mi._proxy_metadata.book_size
         mi.cover_data = ('jpg', self.cover(idx))
         mi.id = self.db.id(idx)
         mi.field_metadata = self.db.field_metadata
         mi.path = self.db.abspath(idx, create_dirs=False)
+        print(mi.path)
         try:
-        	mi.page = get_pdf_page(self,mi.path + "\\" + mi.title + " - " + mi.authors[0] + '.pdf')
+        	mi.page = get_pdf_page(self, mi.path + mi.title + '.pdf')
         except:
-        	print()
+        	print("failed")
         mi.format_files = self.db.new_api.format_files(self.db.data.index_to_id(idx))
         mi.row_number = idx
         try:
