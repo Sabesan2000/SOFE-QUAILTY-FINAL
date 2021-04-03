@@ -30,6 +30,8 @@ class PDFMetadata(object):  # {{{
                 self.author = authors_to_string(mi.authors)
             if mi.tags:
                 self.tags = ', '.join(mi.tags)
+            if mi.page:
+                self.page = 13
 
         self.title = force_unicode(self.title)
         self.author = force_unicode(self.author)

@@ -569,10 +569,10 @@ class BooksModel(QAbstractTableModel):  # {{{
 
         mi.path = self.db.abspath(idx, create_dirs=False)
 
-        try:
-        	mi.page = get_pdf_page(self,mi.path + "\\" + mi.title + " - " + mi.authors[0] + '.pdf')
-        except:
-        	print()
+        # try:
+        # 	mi.page = get_pdf_page(self,mi.path + "\\" + mi.title + " - " + mi.authors[0] + '.pdf')
+        # except:
+        # 	print()
         	
         mi.format_files = self.db.new_api.format_files(self.db.data.index_to_id(idx))
 
