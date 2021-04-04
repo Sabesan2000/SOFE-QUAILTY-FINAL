@@ -402,7 +402,6 @@ class SearchDialog(QDialog, Ui_Dialog):
             self.gui.download_ebook(result.downloads[ext], filename=fname, create_browser=result.create_browser)
 
     def open_store(self, result):
-        print(self.gui.istores[result.store_name])
         self.gui.istores[result.store_name].open(self, result.detail_item, self.open_external.isChecked())
 
     def check_progress(self):

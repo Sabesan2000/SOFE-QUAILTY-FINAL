@@ -44,7 +44,8 @@ NULL_VALUES = {
                 'title'        : _('Unknown'),
                 'user_categories' : {},
                 'author_link_map' : {},
-                'language'     : 'und'
+                'language'     : 'und',
+                'page'         : {}
 }
 
 field_metadata = FieldMetadata()

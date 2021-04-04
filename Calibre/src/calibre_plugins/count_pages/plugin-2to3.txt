@@ -1,0 +1,568 @@
+--- .\action.py	(original)
++++ .\action.py	(refactored)
+@@ -107,7 +107,7 @@
+         mode = c.get(cfg.KEY_BUTTON_DEFAULT, cfg.DEFAULT_STORE_VALUES[cfg.KEY_BUTTON_DEFAULT])
+         download_source = None
+         print("toolbar_triggered - mode=", mode)
+-        if mode in cfg.PAGE_DOWNLOADS.keys():
++        if mode in list(cfg.PAGE_DOWNLOADS.keys()):
+             download_source = mode
+             mode = 'Download'
+         print("toolbar_triggered - mode=", mode)
+@@ -130,7 +130,7 @@
+             return
+         book_ids = self.gui.library_view.get_selected_ids()
+ 
+-        statistics_to_run = [k for k in ALL_STATISTICS.keys()]
++        statistics_to_run = [k for k in list(ALL_STATISTICS.keys())]
+         any_valid, statistics_cols_map = self._get_column_validity(statistics_to_run)
+         if not any_valid:
+             if not question_dialog(self.gui, _('Configure plugin'), '<p>'+
+@@ -154,7 +154,7 @@
+         library_config = cfg.get_library_config(db)
+         statistics_cols_map = {}
+         any_valid = False
+-        for statistic, statistic_col_key in cfg.ALL_STATISTICS.items():
++        for statistic, statistic_col_key in list(cfg.ALL_STATISTICS.items()):
+             col = library_config.get(statistic_col_key, '')
+             is_requested = statistic in statistics_to_run
+             is_valid = is_requested and len(col) > 0 and col in all_cols
+@@ -299,15 +299,15 @@
+         book_ids_to_update = []
+  
+         col_name_books_map = dict((col_name, dict())
+-                               for col_name in statistics_cols_map.values() if col_name)
+-        for book_id, statistics in book_statistics_map.items():
++                               for col_name in list(statistics_cols_map.values()) if col_name)
++        for book_id, statistics in list(book_statistics_map.items()):
+ #             book_mi = db_ref.get_metadata(book_id, index_is_id=True, get_cover=False)
+ #             book_mi = db_ref.get_metadata(book_id, get_user_categories=False, get_cover=False)
+ #             self.set_progressbar_label(_("Updating") + " " + book_mi.title)
+             if db_ref.has_id(book_id):
+                 self.set_progressbar_label(_("Updating") + " " + db_ref.field_for("title", book_id))
+                 self.increment_progressbar()
+-                for statistic, value in statistics.items():
++                for statistic, value in list(statistics.items()):
+                     col_name = statistics_cols_map[statistic]
+                     
+                     if update_if_unchanged or value != db_ref.field_for(col_name, book_id):
+@@ -316,7 +316,7 @@
+             else:
+                 print("Book with id %d is no longer in the library." % book_id)
+ 
+-        for col_name, book_statistcs_map in col_name_books_map.items():
++        for col_name, book_statistcs_map in list(col_name_books_map.items()):
+             db_ref.set_field(col_name, book_statistcs_map)
+ 
+         if book_ids_to_update:
+--- .\common_utils.py	(original)
++++ .\common_utils.py	(refactored)
+@@ -507,7 +507,7 @@
+     def populate_combo(self, selected_key):
+         self.clear()
+         selected_idx = idx = -1
+-        for key, value in self.values.items():
++        for key, value in list(self.values.items()):
+             idx = idx + 1
+             self.addItem(value)
+             if key == selected_key:
+@@ -515,7 +515,7 @@
+         self.setCurrentIndex(selected_idx)
+ 
+     def selected_key(self):
+-        for key, value in self.values.items():
++        for key, value in list(self.values.items()):
+             if value == unicode(self.currentText()).strip():
+                 return key
+ 
+@@ -751,7 +751,7 @@
+     def _populate_settings(self):
+         self.keys_list.clear()
+         ns_prefix = self._get_ns_prefix()
+-        keys = sorted([k[len(ns_prefix):] for k in self.db.prefs.keys()
++        keys = sorted([k[len(ns_prefix):] for k in list(self.db.prefs.keys())
+                        if k.startswith(ns_prefix)])
+         for key in keys:
+             self.keys_list.addItem(key)
+@@ -799,7 +799,7 @@
+             return
+         
+         ns_prefix = self._get_ns_prefix()
+-        keys = [k for k in self.db.prefs.keys() if k.startswith(ns_prefix)]
++        keys = [k for k in list(self.db.prefs.keys()) if k.startswith(ns_prefix)]
+         for k in keys:
+             del self.db.prefs[k]
+         self._populate_settings()
+--- .\config.py	(original)
++++ .\config.py	(refactored)
+@@ -280,7 +280,7 @@
+         column_types = ['float','int']
+         custom_columns = self.plugin_action.gui.library_view.model().custom_columns
+         available_columns = {}
+-        for key, column in custom_columns.items():
++        for key, column in list(custom_columns.items()):
+             typ = column['datatype']
+             if typ in column_types:
+                 available_columns[key] = column
+@@ -331,7 +331,7 @@
+         # Fudge the button default to cater for the options no longer supported by plugin as of 1.5
+         if button_default in ['Estimate', 'EstimatePage', 'EstimateWord']:
+             button_default = 'Estimate'
+-        elif button_default in PAGE_DOWNLOADS.keys():
++        elif button_default in list(PAGE_DOWNLOADS.keys()):
+             pass
+         else:
+             button_default = 'Download'
+@@ -447,7 +447,7 @@
+         layout.addWidget(view_prefs_button)
+ 
+     def reset_dialogs(self):
+-        for key in dynamic.keys():
++        for key in list(dynamic.keys()):
+             if key.startswith('reading_list_') and key.endswith('_again') \
+                                                   and dynamic[key] is False:
+                 dynamic[key] = True
+--- .\dialogs.py	(original)
++++ .\dialogs.py	(refactored)
+@@ -58,7 +58,7 @@
+ 
+         self.page_col_label = self.word_col_label = None
+         self.labels_map = dict((col_name, db.field_metadata.key_to_label(col_name))
+-                               for col_name in statistics_cols_map.values() if col_name)
++                               for col_name in list(statistics_cols_map.values()) if col_name)
+ 
+         QTimer.singleShot(0, self.do_book)
+         self.exec_()
+@@ -73,7 +73,7 @@
+ 
+             book_formats = get_available_formats_for_book(self.db, book_id)
+             statistics_to_run = []
+-            for statistic, col_name in self.statistics_cols_map.items():
++            for statistic, col_name in list(self.statistics_cols_map.items()):
+                 if not col_name:
+                     continue
+                 # Special case for the Adobe page count algorithm - requires an EPUB.
+@@ -172,7 +172,7 @@
+             title = self.db.title(book_id, True)
+             res.append('%s (%s)'%(title, warning))
+         if len(self.bad):
+-            for book_id, error in self.bad.items():
++            for book_id, error in list(self.bad.items()):
+                 if book_id not in distinct_problem_ids:
+                     distinct_problem_ids[book_id] = True
+                 title = self.db.title(book_id, True)
+--- .\download.py	(original)
++++ .\download.py	(refactored)
+@@ -2,6 +2,7 @@
+ # vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
+ from __future__ import (unicode_literals, division, absolute_import,
+                         print_function)
++import collections
+ 
+ __license__   = 'GPL v3'
+ __copyright__ = '2011, Grant Drake <grant.drake@gmail.com>, 2017 additions by David Forrester <davidfor@internode.on.net>'
+@@ -52,7 +53,7 @@
+             br = browser()
+             raw = br.open_novisit(self.url, timeout=self.timeout).read().strip()
+         except Exception as e:
+-            if callable(getattr(e, 'getcode', None)) and \
++            if isinstance(getattr(e, 'getcode', None), collections.Callable) and \
+                     e.getcode() == 404:
+                 print('URL malformed: %r'%self.url)
+                 return
+--- .\nltk_lite\compat.py	(original)
++++ .\nltk_lite\compat.py	(refactored)
+@@ -54,7 +54,7 @@
+                 args = tuple()
+             else:
+                 args = self.default_factory,
+-            return type(self), args, None, None, self.items()
++            return type(self), args, None, None, list(self.items())
+         def copy(self):
+             return self.__copy__()
+         def __copy__(self):
+@@ -62,7 +62,7 @@
+         def __deepcopy__(self, memo):
+             import copy
+             return type(self)(self.default_factory,
+-                              copy.deepcopy(self.items()))
++                              copy.deepcopy(list(self.items())))
+         def __repr__(self):
+             return 'defaultdict(%s, %s)' % (self.default_factory,
+                                             dict.__repr__(self))
+--- .\nltk_lite\probability.py	(original)
++++ .\nltk_lite\probability.py	(refactored)
+@@ -45,8 +45,9 @@
+ import random
+ import warnings
+ from operator import itemgetter
++from functools import reduce
+ try:
+-    from itertools import imap
++    
+ except ImportError:
+     # Python 3...
+     imap=map
+@@ -170,7 +171,7 @@
+             to determine the count for each sample.
+         @rtype: C{list}
+         """
+-        return self.keys()
++        return list(self.keys())
+     
+     def hapaxes(self):
+         """
+@@ -245,7 +246,7 @@
+         """
+         cf = 0.0
+         if not samples:
+-            samples = self.keys()
++            samples = list(self.keys())
+         for sample in samples:
+             cf += self[sample]
+             yield cf
+@@ -285,7 +286,7 @@
+         @rtype: any or C{None}
+         """
+         if self._max_cache is None:
+-            self._max_cache = max([(a,b) for (b,a) in self.items()])[1] 
++            self._max_cache = max([(a,b) for (b,a) in list(self.items())])[1] 
+         return self._max_cache
+ 
+     def plot(self, *args, **kwargs):
+@@ -329,7 +330,7 @@
+             pylab.title(kwargs["title"])
+             del kwargs["title"]
+         pylab.plot(freqs, **kwargs)
+-        pylab.xticks(range(len(samples)), [str(s) for s in samples], rotation=90)
++        pylab.xticks(list(range(len(samples))), [str(s) for s in samples], rotation=90)
+         pylab.xlabel("Samples")
+         pylab.ylabel(ylabel)
+         pylab.show()
+@@ -382,7 +383,7 @@
+         @rtype: C{list} of any
+         """
+         self._sort_keys_by_value()
+-        return map(itemgetter(0), self._item_cache)
++        return list(map(itemgetter(0), self._item_cache))
+     
+     def values(self):
+         """
+@@ -392,7 +393,7 @@
+         @rtype: C{list} of any
+         """
+         self._sort_keys_by_value()
+-        return map(itemgetter(1), self._item_cache)
++        return list(map(itemgetter(1), self._item_cache))
+     
+     def items(self):
+         """
+@@ -411,7 +412,7 @@
+         @return: An iterator over the samples, in sorted order
+         @rtype: C{iter}
+         """
+-        return iter(self.keys())
++        return iter(list(self.keys()))
+ 
+     def iterkeys(self):
+         """
+@@ -420,7 +421,7 @@
+         @return: An iterator over the samples, in sorted order
+         @rtype: C{iter}
+         """
+-        return iter(self.keys())
++        return iter(list(self.keys()))
+ 
+     def itervalues(self):
+         """
+@@ -429,7 +430,7 @@
+         @return: An iterator over the values, in sorted order
+         @rtype: C{iter}
+         """
+-        return iter(self.values())
++        return iter(list(self.values()))
+ 
+     def iteritems(self):
+         """
+@@ -463,9 +464,9 @@
+         @type samples: C{list}
+         """
+         try:
+-            sample_iter = samples.iteritems()
++            sample_iter = iter(samples.items())
+         except:
+-            sample_iter = imap(lambda x: (x,1), samples)
++            sample_iter = map(lambda x: (x,1), samples)
+         for sample, count in sample_iter:
+             self.inc(sample, count=count)    
+     
+@@ -493,7 +494,7 @@
+         return clone
+     def __eq__(self, other):
+         if not isinstance(other, FreqDist): return False
+-        return self.items() == other.items() # items are already sorted
++        return list(self.items()) == list(other.items()) # items are already sorted
+     def __ne__(self, other):
+         return not (self == other)
+     def __le__(self, other):
+@@ -681,13 +682,13 @@
+         # Normalize the distribution, if requested.
+         if normalize:
+             if log:
+-                value_sum = sum_logs(self._prob_dict.values())
++                value_sum = sum_logs(list(self._prob_dict.values()))
+                 if value_sum <= _NINF:
+                     logp = math.log(1.0/len(prob_dict), 2)
+-                    for x in prob_dict.keys():
++                    for x in list(prob_dict.keys()):
+                         self._prob_dict[x] = logp
+                 else:
+-                    for (x, p) in self._prob_dict.items():
++                    for (x, p) in list(self._prob_dict.items()):
+                         self._prob_dict[x] -= value_sum
+             else:
+                 value_sum = sum(self._prob_dict.values())
+@@ -697,7 +698,7 @@
+                         self._prob_dict[x] = p
+                 else:
+                     norm_factor = 1.0/value_sum
+-                    for (x, p) in self._prob_dict.items():
++                    for (x, p) in list(self._prob_dict.items()):
+                         self._prob_dict[x] *= norm_factor
+ 
+     def prob(self, sample):
+@@ -717,10 +718,10 @@
+ 
+     def max(self):
+         if not hasattr(self, '_max'):
+-            self._max = max((p,v) for (v,p) in self._prob_dict.items())[1]
++            self._max = max((p,v) for (v,p) in list(self._prob_dict.items()))[1]
+         return self._max
+     def samples(self):
+-        return self._prob_dict.keys()
++        return list(self._prob_dict.keys())
+     def __repr__(self):
+         return '<ProbDist with %d samples>' % len(self._prob_dict)
+ 
+@@ -758,7 +759,7 @@
+         return self._freqdist.max()
+ 
+     def samples(self):
+-        return self._freqdist.keys()
++        return list(self._freqdist.keys())
+ 
+     def __repr__(self):
+         """
+@@ -845,7 +846,7 @@
+         return self._freqdist.max()
+ 
+     def samples(self):
+-        return self._freqdist.keys()
++        return list(self._freqdist.keys())
+ 
+     def discount(self):
+         gb = self._gamma * self._bins
+@@ -1058,7 +1059,7 @@
+         return self._heldout_fdist
+ 
+     def samples(self):
+-        return self._base_fdist.keys()
++        return list(self._base_fdist.keys())
+ 
+     def prob(self, sample):
+         # Use our precomputed probability estimate.
+@@ -1128,7 +1129,7 @@
+ 
+     def samples(self):
+         # [xx] nb: this is not too efficient
+-        return set(sum([fd.keys() for fd in self._freqdists], []))
++        return set(sum([list(fd.keys()) for fd in self._freqdists], []))
+ 
+     def prob(self, sample):
+         # Find the average probability estimate returned by each
+@@ -1224,7 +1225,7 @@
+         return self._freqdist.max()
+ 
+     def samples(self):
+-        return self._freqdist.keys()
++        return list(self._freqdist.keys())
+ 
+     def freqdist(self):
+         return self._freqdist
+@@ -1339,7 +1340,7 @@
+         return self._freqdist.max()
+ 
+     def samples(self):
+-        return self._freqdist.keys()
++        return list(self._freqdist.keys())
+ 
+     def discount(self):
+         """
+@@ -1573,7 +1574,7 @@
+         return self._freqdist.max()
+ 
+     def samples(self):
+-        return self._freqdist.keys()
++        return list(self._freqdist.keys())
+     
+     def freqdist(self):
+         return self._freqdist
+@@ -1683,7 +1684,7 @@
+         raise ValueError('expected a ProbDist.')
+     # Is this right?
+     return sum(actual_pdist.prob(s) * math.log(test_pdist.prob(s), 2)
+-               for s in actual_pdist.keys())
++               for s in list(actual_pdist.keys()))
+ 
+ def entropy(pdist):
+     probs = [pdist.prob(s) for s in pdist.samples()]
+@@ -1793,7 +1794,7 @@
+           recorded by this C{ConditionalFreqDist}.
+         @rtype: C{int}
+         """
+-        return sum(fdist.N() for fdist in self._fdists.values())
++        return sum(fdist.N() for fdist in list(self._fdists.values()))
+ 
+     def plot(self, *args, **kwargs):
+         """
+@@ -1837,7 +1838,7 @@
+ 
+         pylab.legend(loc=legend_loc)
+         pylab.grid(True, color="silver")
+-        pylab.xticks(range(len(samples)), [str(s) for s in samples], rotation=90)
++        pylab.xticks(list(range(len(samples))), [str(s) for s in samples], rotation=90)
+         if title:
+             pylab.title(title)
+         pylab.xlabel("Samples")
+@@ -2043,7 +2044,7 @@
+         return self._pdists[condition]
+ 
+     def conditions(self):
+-        return self._pdists.keys()
++        return list(self._pdists.keys())
+ 
+     def __len__(self):
+         return len(self._pdists)
+@@ -2069,7 +2070,7 @@
+ 
+     def conditions(self):
+         # inherit documentation
+-        return self._dict.keys()
++        return list(self._dict.keys())
+ 
+ ##//////////////////////////////////////////////////////
+ ## Adding in log-space.
+@@ -2297,7 +2298,7 @@
+         print(FORMATSTR % val)
+ 
+     # Print the totals for each column (should all be 1.0)
+-    zvals = zip(*vals)
++    zvals = list(zip(*vals))
+     def sum(lst): return reduce(lambda x,y:x+y, lst, 0)
+     sums = [sum(val) for val in zvals[1:]]
+     print('-'*9*(len(pdists)+2))
+@@ -2327,7 +2328,7 @@
+     katz = SimpleGoodTuringProbDist(fd, 7)
+     print('%18s %8s  %12s %14s  %12s' \
+         % ("word", "freqency", "GoodTuring", "SimpleGoodTuring", "Katz-cutoff" ))
+-    for key in fd.keys():
++    for key in list(fd.keys()):
+         print('%18s %8d  %12e   %14e   %12e' \
+             % (key, fd[key], gt.prob(key), sgt.prob(key), katz.prob(key)))
+ 
+--- .\nltk_lite\punkt.py	(original)
++++ .\nltk_lite\punkt.py	(refactored)
+@@ -225,7 +225,7 @@
+     pair will have None as its second element.
+     """
+     it = iter(it)
+-    prev = it.next()
++    prev = next(it)
+     for el in it:
+         yield (prev, el)
+         prev = el
+@@ -294,7 +294,7 @@
+ 
+         for p in self._properties:
+             setattr(self, p, None)
+-        for k, v in params.items():
++        for k, v in list(params.items()):
+             setattr(self, k, v)
+ 
+     #////////////////////////////////////////////////////////////
+@@ -447,7 +447,7 @@
+             if line.strip():
+                 line_toks = iter(self._lang_vars.word_tokenize(line))
+ 
+-                yield self._Token(line_toks.next(),
++                yield self._Token(next(line_toks),
+                         parastart=parastart, linestart=True)
+                 parastart = False
+ 
+@@ -727,7 +727,7 @@
+         if ortho_thresh > 1:
+             old_oc = self._params.ortho_context
+             self._params.clear_ortho_context()
+-            for tok, count in self._type_fdist.items():
++            for tok, count in list(self._type_fdist.items()):
+                 if count >= ortho_thresh:
+                     self._params.ortho_context[tok] = old_oc[tok]
+ 
+@@ -746,7 +746,7 @@
+         # and so create a new FreqDist rather than working in place.
+         res = FreqDist()
+         num_removed = 0
+-        for tok, count in fdist.items():
++        for tok, count in list(fdist.items()):
+             if count < threshold:
+                 num_removed += 1
+             else:
+@@ -1009,7 +1009,7 @@
+         """
+         Generates likely collocations and their log-likelihood.
+         """
+-        for types, col_count in self._collocation_fdist.items():
++        for types, col_count in list(self._collocation_fdist.items()):
+             try:
+                 typ1, typ2 = types
+             except TypeError:
+@@ -1053,7 +1053,7 @@
+         Uses collocation heuristics for each candidate token to
+         determine if it frequently starts sentences.
+         """
+-        for (typ, typ_at_break_count) in self._sent_starter_fdist.items():
++        for (typ, typ_at_break_count) in list(self._sent_starter_fdist.items()):
+             if not typ:
+                 continue
+ 
+--- .\nltk_lite\regexp.py	(original)
++++ .\nltk_lite\regexp.py	(refactored)
+@@ -51,10 +51,10 @@
+     @type method: instance method
+     """
+     # [xx] breaks on classic classes!
+-    if isinstance(method, types.MethodType) and method.im_class is not None:
++    if isinstance(method, types.MethodType) and method.__self__.__class__ is not None:
+         name = method.__name__
+         funcs = [cls.__dict__[name]
+-                 for cls in _mro(method.im_class)
++                 for cls in _mro(method.__self__.__class__)
+                  if name in cls.__dict__]
+         return len(funcs) > 1
+     else:
+--- .\nltk_lite\textanalyzer.py	(original)
++++ .\nltk_lite\textanalyzer.py	(refactored)
+@@ -3,11 +3,11 @@
+ 
+ import pickle
+ try:
+-    import syllables_en
++    from . import syllables_en
+ except ImportError:
+     import calibre_plugins.count_pages.nltk_lite.syllables_en
+ try:
+-    from regexp import RegexpTokenizer
++    from .regexp import RegexpTokenizer
+ except ImportError:
+     from calibre_plugins.count_pages.nltk_lite.regexp import RegexpTokenizer
+ import six

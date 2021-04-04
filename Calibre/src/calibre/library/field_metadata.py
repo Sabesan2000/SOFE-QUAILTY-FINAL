@@ -322,6 +322,16 @@ def _builtin_field_metadata():
                            'is_custom':False,
                            'is_category':False,
                            'is_csp': False}),
+            ('page',      {'table':None,
+                           'column':None,
+                           'datatype':'float',
+                           'is_multiple':{},
+                           'kind':'field',
+                           'name':_('Pages'),
+                           'search_terms':['page'],
+                           'is_custom':False,
+                           'is_category':False,
+                           'is_csp': False}),
         ]
 # }}}
 

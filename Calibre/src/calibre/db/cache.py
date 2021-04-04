@@ -42,6 +42,7 @@ from calibre.utils.config import prefs, tweaks
 from calibre.utils.date import UNDEFINED_DATE, now as nowf, utcnow
 from calibre.utils.icu import sort_key
 from calibre.utils.localization import canonicalize_lang
+
 from polyglot.builtins import (
     cmp, iteritems, itervalues, string_or_bytes, unicode_type, zip
 )
@@ -311,6 +312,7 @@ class Cache(object):
         mi.publisher   = self._field_for('publisher', book_id)
         n = utcnow()
         mi.timestamp   = self._field_for('timestamp', book_id, default_value=n)
+        mi.page        = self._field_for('page', book_id)
         mi.pubdate     = self._field_for('pubdate', book_id, default_value=n)
         mi.uuid        = self._field_for('uuid', book_id,
                 default_value='dummy')

@@ -569,10 +569,10 @@ class BooksModel(QAbstractTableModel):  # {{{
 
         mi.path = self.db.abspath(idx, create_dirs=False)
 
-        # try:
-        # 	mi.page = get_pdf_page(self,mi.path + "\\" + mi.title + " - " + mi.authors[0] + '.pdf')
-        # except:
-        # 	print()
+        try:
+        	mi.page = get_pdf_page(self,mi.path + "\\" + mi.title + " - " + mi.authors[0] + '.pdf')
+        except:
+        	print("PDF page count failed")
         	
         mi.format_files = self.db.new_api.format_files(self.db.data.index_to_id(idx))
 
@@ -1571,37 +1571,37 @@ class DeviceBooksModel(BooksModel):  # {{{
             img = self.default_image
         return img
 
-    def get_book_display_info(self, idx):
-        from calibre.ebooks.metadata.book.base import Metadata
-        item = self.db[self.map[idx]]
-        cover = self.cover(idx)
-        if cover is self.default_image:
-            cover = None
-        title = item.title
-        if not title:
-            title = _('Unknown')
-        au = item.authors
-        if not au:
-            au = [_('Unknown')]
-        mi = Metadata(title, au)
-        mi.cover_data = ('jpg', cover)
-        fmt = _('Unknown')
-        ext = os.path.splitext(item.path)[1]
-        if ext:
-            fmt = ext[1:].lower()
-        mi.formats = [fmt]
-        mi.path = (item.path if item.path else None)
-        dt = dt_factory(item.datetime, assume_utc=True)
-        mi.timestamp = dt
-        mi.device_collections = list(item.device_collections)
-        mi.tags = list(getattr(item, 'tags', []))
-        mi.comments = getattr(item, 'comments', None)
-        series = getattr(item, 'series', None)
-        if series:
-            sidx = getattr(item, 'series_index', 0)
-            mi.series = series
-            mi.series_index = sidx
-        return mi
+    # def get_book_display_info(self, idx):
+    #     from calibre.ebooks.metadata.book.base import Metadata
+    #     item = self.db[self.map[idx]]
+    #     cover = self.cover(idx)
+    #     if cover is self.default_image:
+    #         cover = None
+    #     title = item.title
+    #     if not title:
+    #         title = _('Unknown')
+    #     au = item.authors
+    #     if not au:
+    #         au = [_('Unknown')]
+    #     mi = Metadata(title, au)
+    #     mi.cover_data = ('jpg', cover)
+    #     fmt = _('Unknown')
+    #     ext = os.path.splitext(item.path)[1]
+    #     if ext:
+    #         fmt = ext[1:].lower()
+    #     mi.formats = [fmt]
+    #     mi.path = (item.path if item.path else None)
+    #     dt = dt_factory(item.datetime, assume_utc=True)
+    #     mi.timestamp = dt
+    #     mi.device_collections = list(item.device_collections)
+    #     mi.tags = list(getattr(item, 'tags', []))
+    #     mi.comments = getattr(item, 'comments', None)
+    #     series = getattr(item, 'series', None)
+    #     if series:
+    #         sidx = getattr(item, 'series_index', 0)
+    #         mi.series = series
+    #         mi.series_index = sidx
+    #     return mi
 
     def current_changed(self, current, previous, emit_signal=True):
         if current.isValid():

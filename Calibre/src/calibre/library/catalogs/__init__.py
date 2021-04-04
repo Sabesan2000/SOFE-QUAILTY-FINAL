@@ -10,11 +10,11 @@ __docformat__ = 'restructuredtext en'
 FIELDS = ['all', 'title', 'title_sort', 'author_sort', 'authors', 'comments',
           'cover', 'formats','id', 'isbn', 'library_name','ondevice', 'pubdate', 'publisher',
           'rating', 'series_index', 'series', 'size', 'tags', 'timestamp',
-          'uuid', 'languages', 'identifiers']
+          'uuid', 'languages', 'identifiers', 'page']
 
 # Allowed fields for template
 TEMPLATE_ALLOWED_FIELDS = ['author_sort', 'authors', 'id', 'isbn', 'pubdate', 'title_sort',
-    'publisher', 'series_index', 'series', 'tags', 'timestamp', 'title', 'uuid']
+    'publisher', 'series_index', 'series', 'tags', 'timestamp', 'title', 'uuid', 'page']
 
 
 class AuthorSortMismatchException(Exception):

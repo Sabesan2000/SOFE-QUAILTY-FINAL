@@ -768,6 +768,8 @@ def create_field(name, table, bools_are_tristate, get_template_functions):
         cls = IdentifiersField
     elif name == 'tags':
         cls = TagsField
+    elif name == 'page':
+        cls = PageField
     elif table.metadata['datatype'] == 'composite':
         cls = CompositeField
     elif table.metadata['datatype'] == 'series':

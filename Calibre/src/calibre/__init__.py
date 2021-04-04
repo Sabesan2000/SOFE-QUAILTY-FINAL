@@ -1,4 +1,3 @@
-
 ''' E-book management software'''
 __license__   = 'GPL v3'
 __copyright__ = '2008, Kovid Goyal <kovid@kovidgoyal.net>'
@@ -9,7 +8,6 @@ from polyglot.builtins import codepoint_to_chr, unicode_type, range, hasenv, nat
 from math import floor
 from functools import partial
 
-print("Hello")
 if not hasenv('CALIBRE_SHOW_DEPRECATION_WARNINGS'):
     warnings.simplefilter('ignore', DeprecationWarning)
 try:

@@ -78,10 +78,6 @@ class ViewAction(InterfaceAction):
         ac.triggered.connect(self.view_last_read)
         self.gui.addAction(ac)
 
-    #Changed: My function that gets called from the view menu
-    def printStatement(self, word):
-        print(word)
-
     def initialization_complete(self):
         self.build_menus(self.gui.current_db)
 

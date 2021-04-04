@@ -56,10 +56,6 @@ class ResultsView(QTreeView):
         for i in self._model.IMG_COLS:
             self.setItemDelegateForColumn(i, self.img_delegate)
 
-    def open_page(self, result):
-        import webbrowser
-        webbrowser.open('https://www.goodreads.com/search?utf8=%E2%9C%93&q='+ result.title+'&search_type=books')
-
     def contextMenuEvent(self, event):
         index = self.indexAt(event.pos())
 
@@ -73,7 +69,5 @@ class ResultsView(QTreeView):
         if not result.downloads:
             da.setEnabled(False)
         menu.addSeparator()
-        menu.addAction(_('Go to in store...'), partial(self.open_requested.emit, result))
-        menu.addSeparator()
-        menu.addAction(_('See Reviews...'), partial(self.open_page, result))
+        menu.addAction(_('Goto in store...'), partial(self.open_requested.emit, result))
         menu.exec_(event.globalPos())

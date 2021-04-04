@@ -848,11 +848,6 @@ class ActionAdd(InterfaceActionBase):
     actual_plugin = 'calibre.gui2.actions.add:AddAction'
     description = _('Add books to calibre or the connected device')
 
-class SelectAll(InterfaceActionBase):
-    name = 'Select All'
-    actual_plugin = 'calibre.gui2.actions.selectAll:SelectAllAction'
-    description = _('select all books')
-
 
 class ActionFetchAnnotations(InterfaceActionBase):
     name = 'Fetch Annotations'

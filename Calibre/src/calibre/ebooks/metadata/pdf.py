@@ -15,6 +15,7 @@ from calibre.ebooks.metadata import (
 from calibre.utils.ipc.simple_worker import fork_job, WorkerError
 from polyglot.builtins import iteritems, unicode_type
 
+page_counter = 0
 
 def get_tools():
     from calibre.ebooks.pdf.pdftohtml import PDFTOHTML
@@ -85,6 +86,7 @@ def read_info(outputdir, get_cover):
 def page_images(pdfpath, outputdir='.', first=1, last=1, image_format='jpeg', prefix='page-images'):
     pdftoppm = get_tools()[1]
     outputdir = os.path.abspath(outputdir)
+    page_counter += 1
     args = {}
     if iswindows:
         args['creationflags'] = subprocess.HIGH_PRIORITY_CLASS | subprocess.CREATE_NO_WINDOW
@@ -174,6 +176,7 @@ def get_metadata(stream, cover=True):
 
     if cdata:
         mi.cover_data = ('jpeg', cdata)
+
     return mi
 
 

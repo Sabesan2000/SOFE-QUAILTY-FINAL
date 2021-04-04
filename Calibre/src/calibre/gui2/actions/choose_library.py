@@ -8,7 +8,7 @@ __docformat__ = 'restructuredtext en'
 
 import os, posixpath, weakref, sys
 from functools import partial
-from PyQt5 import QtCore, QtGui, QtWidgets
+
 from qt.core import (QMenu, Qt, QInputDialog, QToolButton, QDialog,
         QDialogButtonBox, QGridLayout, QLabel, QLineEdit, QIcon, QSize,
         QCoreApplication, pyqtSignal, QVBoxLayout, QTimer, QAction)
@@ -232,14 +232,6 @@ class ChooseLibraryAction(InterfaceAction):
             None, None), attr='action_pick_random')
         ac.triggered.connect(self.pick_random)
 
-        cm = partial(self.create_menu_action, self.qaction.menu())
-        self.action_print = cm('Select all books', _('Select All'),
-                icon='random.png', triggered=self.select_all)
-
-        # ac = self.create_action(spec=(_('Select All'), 'random.png',
-        #     None, None), attr='action_select_all')
-        # ac.triggered.connect(self.print)
-
         if not os.environ.get('CALIBRE_OVERRIDE_DATABASE_PATH', None):
             self.choose_menu.addAction(self.action_choose)
 
@@ -306,13 +298,6 @@ class ChooseLibraryAction(InterfaceAction):
                 self.gui.library_view.preserve_state(require_selected_ids=False)
         return ans
 
-    def select_all(self):
-        self.gui.library_view.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        pick = self.gui.library_view.model().rowCount(None)
-        for i in range(pick):
-            self.gui.library_view.selectRow(i)
-
-        self.gui.library_view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
     def pick_random(self, *args):
         self.gui.iactions['Pick Random Book'].pick_random()
 

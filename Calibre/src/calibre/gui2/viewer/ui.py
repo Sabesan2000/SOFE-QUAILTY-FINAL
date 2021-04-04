@@ -95,7 +95,7 @@ class EbookViewer(MainWindow):
         t.setSingleShot(True), t.setInterval(3000), t.setTimerType(Qt.TimerType.VeryCoarseTimer)
         connect_lambda(t.timeout, self, lambda self: self.save_annotations(in_book_file=False))
         self.pending_open_at = open_at
-        self.base_window_title = _('E-book viewer')
+        self.base_window_title = _('E-book Viewer')
         self.setDockOptions(QMainWindow.DockOption.AnimatedDocks | QMainWindow.DockOption.AllowTabbedDocks | QMainWindow.DockOption.AllowNestedDocks)
         self.setWindowTitle(self.base_window_title)
         self.in_full_screen_mode = None
