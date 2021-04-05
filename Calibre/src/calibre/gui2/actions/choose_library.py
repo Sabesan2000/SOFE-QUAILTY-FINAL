@@ -6,6 +6,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2010, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
+
 import os, posixpath, weakref, sys
 from functools import partial
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -20,7 +21,9 @@ from calibre.utils.icu import sort_key
 from calibre.gui2 import (gprefs, warning_dialog, Dispatcher, error_dialog,
     question_dialog, info_dialog, open_local_file, choose_dir)
 from calibre.gui2.actions import InterfaceAction
-from polyglot.builtins import unicode_type, range
+
+if __name__ == "__main__":
+    from polyglot.builtins import unicode_type, range
 
 
 def db_class():
@@ -233,7 +236,7 @@ class ChooseLibraryAction(InterfaceAction):
         ac.triggered.connect(self.pick_random)
 
         cm = partial(self.create_menu_action, self.qaction.menu())
-        self.action_print = cm('Select all books', _('Select All'),
+        self.action_select_all = cm('Select all books', _('Select All'),
                 icon='random.png', triggered=self.select_all)
 
         # ac = self.create_action(spec=(_('Select All'), 'random.png',
